@@ -54,6 +54,7 @@ tolerations: []
 affinity: {}
 
 config:
+  # config.token --  Defines the server's token which is needed to run it. To generate a token you need a copy of DST - http://dont-starve-game.wikia.com/wiki/Guides/Don%E2%80%99t_Starve_Together_Dedicated_Servers#Server_Tokens.
   token:
   name: "Dont Starve Together"
   max_players: 16
@@ -87,3 +88,12 @@ config:
   leveldata_overrides:
   mods_overrides:
   backup_log_count:
+
+## Persist configuration to a persistent volume
+persistence:
+  enabled: false
+  existingClaim:
+  storageClassName:
+  accessModes:
+    - ReadWriteMany
+  size: 8Gi

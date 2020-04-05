@@ -7,9 +7,11 @@ icon: https://www.klei.com/sites/default/files/games/dont-starve-together/assets
 keywords:
   - games
   - survival
+  - dst
 home: https://klei.com/games/dont-starve-together
 sources:
   - https://hub.docker.com/r/dstacademy/dontstarvetogether
+  - https://github.com/fairplay-zone/docker-dontstarvetogether
 maintainers:
   - name: Gavin Mogan
     email: helm@gavinmogan.com

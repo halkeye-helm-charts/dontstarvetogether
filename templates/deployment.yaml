@@ -6,6 +6,13 @@ metadata:
 {{ include "dontstarvetogether.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+{{- if .Values.strategy }}
+  strategy:
+{{ toYaml .Values.strategy | indent 4 }}
+{{ if eq .Values.strategy.type "Recreate" }}
+    rollingUpdate: null
+{{- end }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "dontstarvetogether.name" . }}
@@ -29,15 +36,19 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["dst-server", "start","--update=all"]
           envFrom:
             - configMapRef:
-              name: {{ include "dontstarvetogether.fullname" . }}
+                name: {{ include "dontstarvetogether.fullname" . }}
           ports:
             - name: server
               containerPort: 10999
               protocol: UDP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /var/lib/dsta/cluster/shard/save/
+            name: data
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -50,3 +61,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+        - name: data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "dontstarvetogether.fullname" . }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
